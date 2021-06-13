@@ -21,7 +21,7 @@ function entrarNaSala(resposta) {
   alert("ENTREI");
   console.log(resposta);
   //carregarMensagens();
-  //carregarParticipantes();
+  carregarParticipantes();
   
   //agendarAtualizacaoDeMensagens();
   //agendarAtualizacaoDeParticipantes();

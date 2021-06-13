@@ -42,5 +42,9 @@ app.post("/participants", (req, res) => {
     }
 });
 
+app.get("/participants", (req, res) => {
+    res.send(pessoas);
+});
+
 app.listen(4000);
 
