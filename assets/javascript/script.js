@@ -20,7 +20,7 @@ function registrarParticipante() {
 function entrarNaSala(resposta) {
   alert("ENTREI");
   console.log(resposta);
-  //carregarMensagens();
+  carregarMensagens();
   carregarParticipantes();
   
   //agendarAtualizacaoDeMensagens();

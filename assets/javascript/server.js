@@ -6,7 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-let now = dayjs();
 const pessoas = [];
 const mensagens = [];
 let nameAvailable = true;
@@ -56,6 +55,7 @@ function validarMensagem(mensagem) {
 }
 
 app.post("/participants", (req, res) => {
+    let now = dayjs();
     nameAvailable = verificarNome(req.body.name);
     if (nameAvailable === true) {
         const pessoa = { name: req.body.name, lastStatus: Date.now() };
@@ -75,20 +75,50 @@ app.get("/participants", (req, res) => {
 });
 
 app.post("/messages", (req, res) => {
+    let now = dayjs();
     let user = req.header('User');
-    console.log(user);
     let mensagem = req.body;
-    mensagem = { from: user, ...mensagem, time: now.format('HH') + ":" + now.format('mm') + ":" + now.format('ss') };
-    console.log(mensagem);
+    mensagem = { from: user, time: now.format('HH') + ":" + now.format('mm') + ":" + now.format('ss'), ...mensagem  };
     messageStatus = validarMensagem(mensagem);
     if (messageStatus === true) {
         mensagens.push(mensagem);
+        res.status(200).end();
     }
     else {
         res.status(400).end();
     }
 });
 
+app.get("/messages", (req, res) => {
+    let user = req.header('User');
+    const limit = req.query.limit;
+    if(req.query.limit == {}){
+        res.send(mensagens);
+    }
+    else{
+        let lastMessages =  selecionarMensagens(user, limit);
+        res.send(lastMessages);
+    }
+});
+
+function selecionarMensagens(user, qtd){
+    let lastMessages = [];
+    let i = 1;
+    if(mensagens.length == 1){
+        lastMessages = [...mensagens];
+    }
+    else{
+        console.log(mensagens.length);
+       while(i < qtd && i <= mensagens.length){
+            if(mensagens[(mensagens.length)-i].to === 'Todos' || mensagens[(mensagens.length)-i].to === user || mensagens[(mensagens.length)-i].from == user ){
+                lastMessages.push(mensagens[mensagens.length-i]);
+                i++;
+           }
+        }
+        lastMessages=lastMessages.reverse();
+    }
+    return lastMessages;
+}
 
 app.listen(4000);
 
