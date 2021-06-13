@@ -9,35 +9,63 @@ app.use(cors());
 let now = dayjs();
 const pessoas = [];
 const mensagens = [];
-let statusCode = 200;
+let nameAvailable = true;
+let messageStatus = true;
 
-function verificarNome(nome){
-    if(nome === ""){
-            statusCode = 400;
+function verificarNome(nome) {
+    let found = false;
+    if (nome === "") {
+        return false;
     }
-    else{
-        if(pessoas.length != 0){
-            for(let i=o; i < pessoas.length; i++){
-                if(nome === pessoas[i].name){
-                     statusCode = 400;
-                 }
+    else {
+        if (pessoas.length != 0) {
+            for (let i = 0; i < pessoas.length; i++) {
+                if (nome === pessoas[i].name) {
+                    found = true;
+                }
+            }
+            if (found === true) {
+                return false;
+            }
+            else {
+                return true;
             }
         }
+        else {
+            return true;
+        }
+
     }
 }
 
+function validarMensagem(mensagem) {
+    if (mensagem.to === '' || mensagem.text === '') {
+        return false;
+    }
+    if (mensagem.type != 'message' && mensagem.type != 'private_message') {
+        return false;
+    }
+    let userOnline = !verificarNome(mensagem.from);
+    if (userOnline === false) {
+        return false;
+    }
+    else if(userOnline  === true) {
+        return true;
+    }
+
+}
+
 app.post("/participants", (req, res) => {
-    verificarNome(req.body.name);
-    if(statusCode === 200){
-        const pessoa = {name: req.body.name, lastStatus:Date.now()};
+    nameAvailable = verificarNome(req.body.name);
+    if (nameAvailable === true) {
+        const pessoa = { name: req.body.name, lastStatus: Date.now() };
         pessoas.push(pessoa);
-        const mensagem = {from:pessoa.name, to:'Todos', text:'entra na sala...', type:'status', time: now.format('HH')+":"+now.format('mm')+":"+now.format('ss')};
+        const mensagem = { from: pessoa.name, to: 'Todos', text: 'entra na sala...', type: 'status', time: now.format('HH') + ":" + now.format('mm') + ":" + now.format('ss') };
         console.log(mensagem.time);
         mensagens.push(mensagem);
         res.status(200).end();
-
     }
-    else{
+    else {
         res.status(400).end();
     }
 });
@@ -45,6 +73,22 @@ app.post("/participants", (req, res) => {
 app.get("/participants", (req, res) => {
     res.send(pessoas);
 });
+
+app.post("/messages", (req, res) => {
+    let user = req.header('User');
+    console.log(user);
+    let mensagem = req.body;
+    mensagem = { from: user, ...mensagem, time: now.format('HH') + ":" + now.format('mm') + ":" + now.format('ss') };
+    console.log(mensagem);
+    messageStatus = validarMensagem(mensagem);
+    if (messageStatus === true) {
+        mensagens.push(mensagem);
+    }
+    else {
+        res.status(400).end();
+    }
+});
+
 
 app.listen(4000);
 
