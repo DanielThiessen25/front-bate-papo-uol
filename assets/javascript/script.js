@@ -23,9 +23,9 @@ function entrarNaSala(resposta) {
   carregarMensagens();
   carregarParticipantes();
   
-  //agendarAtualizacaoDeMensagens();
-  //agendarAtualizacaoDeParticipantes();
-  //agendarAtualizacaoDeStatus();
+  agendarAtualizacaoDeMensagens();
+  agendarAtualizacaoDeParticipantes();
+  agendarAtualizacaoDeStatus();
 }
 
 function carregarMensagens() {
