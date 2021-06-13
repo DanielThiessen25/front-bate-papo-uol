@@ -17,13 +17,15 @@ function registrarParticipante() {
   requisicao.then(entrarNaSala).catch(perguntarNome);
 }
 
-function entrarNaSala() {
-  carregarMensagens();
-  carregarParticipantes();
+function entrarNaSala(resposta) {
+  alert("ENTREI");
+  console.log(resposta);
+  //carregarMensagens();
+  //carregarParticipantes();
   
-  agendarAtualizacaoDeMensagens();
-  agendarAtualizacaoDeParticipantes();
-  agendarAtualizacaoDeStatus();
+  //agendarAtualizacaoDeMensagens();
+  //agendarAtualizacaoDeParticipantes();
+  //agendarAtualizacaoDeStatus();
 }
 
 function carregarMensagens() {
